@@ -1,0 +1,35 @@
+create table produtos (
+
+id INT NOT NULL AUTO_INCREMENT,
+    codigo INT,
+    nome VARCHAR(50),
+    tipo int,
+    marca varchar(50),
+    medida float,
+    valor float,
+    PRIMARY KEY (id)
+
+    );
+
+gravando arquivo do banco de dados 
+try:
+     with banco:
+        banco.commit()  
+        comando_SQL = "SELECT * FROM produtos INTO OUTFILE 'C:/Programas/Formularios/tabelaProdutos.csv' FIELDS TERMINATED BY ';' ENCLOSED BY''"
+        cursor = banco.cursor()
+        with cursor:
+            cursor.execute(ste)
+            dados_lidos = cursor.fetchall()
+            print(dados_lidos)
+    except InternalError:
+        Path('C:/Programas/Formularios/tabelaProdutos.csv').touch()
+    finally:
+        banco.close()
+        print("MySQL connection is closed")
+
+
+bt = Button(tess, text="tess", command=gera_csv)
+bt.place(x=10, y=10)
+
+
+tess.mainloop()
