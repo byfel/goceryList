@@ -125,7 +125,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>Excluir</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_4">

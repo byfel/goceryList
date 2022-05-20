@@ -5,12 +5,9 @@ import sys
 import mysql.connector
 from reportlab.pdfgen import canvas
 import pandas as pd
-from tkinter import *
-import pymysql
-from pymysql import InternalError
 
-tess = Tk()
-tess.title("tess")
+
+
 
 
 #conexão com o banco de dados Mysql
@@ -21,6 +18,19 @@ banco = mysql.connector.connect(
     passwd="",
     database="cadastro_produtos"
 )
+
+def deletar():
+   linha = segunda_janela.tableWidget.currentRow()
+   
+   segunda_janela.tableWidget.removeRow(linha)
+
+   cursor = banco.cursor()
+   cursor.execute("SELECT id FROM produtos")
+   dados_lidos = cursor.fetchall()
+   valor_id=dados_lidos[linha][0]
+   cursor.execute("DELETE FROM produtos WHERE id="+ str(valor_id))
+   print(linha + 1)
+   print(valor_id)
 
 
 
@@ -131,11 +141,6 @@ def gera_csv():
     #w.close() 
 
 
-
-
-
-    
-
 app=QtWidgets.QApplication([])
 formulario=uic.loadUi("formulario.ui")
 segunda_janela=uic.loadUi("Segunda_janela.ui")
@@ -143,8 +148,7 @@ formulario.pushButton.clicked.connect(funcao_principal)
 formulario.pushButton_3.clicked.connect(chamar_tela)
 segunda_janela.pushButton_5.clicked.connect(gera_pdf)
 segunda_janela.pushButton_4.clicked.connect(gera_csv)
-
-
+segunda_janela.pushButton_3.clicked.connect(deletar)
 
 
 formulario.show()
