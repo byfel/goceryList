@@ -2,12 +2,14 @@ from re import S
 from subprocess import DETACHED_PROCESS
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
 import sys
+from colorama import Cursor
 import mysql.connector
+#from mysql.connector
 from reportlab.pdfgen import canvas
 import pandas as pd
 
 
-
+numero_id = 0
 
 
 #conexão com o banco de dados Mysql
@@ -18,7 +20,65 @@ banco = mysql.connector.connect(
     passwd="",
     database="cadastro_produtos"
 )
+def editar():
+    global numero_id
 
+    linha = segunda_janela.tableWidget.currentRow()
+
+    cursor = banco.cursor()
+    cursor.execute("SELECT id FROM produtos")
+    dados_lidos = cursor.fetchall()
+    valor_id=dados_lidos[linha][0]
+    cursor.execute("SELECT * FROM produtos WHERE id="+ str(valor_id))
+    produto = cursor.fetchall()
+
+    JanelaEdit.show()
+
+    
+
+    JanelaEdit.lineEdit.setText(str(produto[0][0]))
+    JanelaEdit.lineEdit_3.setText(str(produto[0][2]))
+    JanelaEdit.lineEdit_4.setText(str(produto[0][3]))
+    JanelaEdit.lineEdit_5.setText(str(produto[0][4]))
+    JanelaEdit.lineEdit_6.setText(str(produto[0][5]))
+    JanelaEdit.lineEdit_7.setText(str(produto[0][6]))
+    numero_id = valor_id
+    #print(produto[0][0])
+
+
+def salvarEdit():
+    #pega o numero do id
+    global numero_id
+
+    
+    
+
+    #valores digitados na janela de edição
+    
+    nome = JanelaEdit.lineEdit_3.text()
+    #tipo = JanelaEdit.lineEdit_4.text()
+    #marca =JanelaEdit.lineEdit_5.text()
+    #medida = JanelaEdit.lineEdit_6.text()
+    valor = JanelaEdit.lineEdit_7.text()
+
+    #atualizar os dados no banco
+    #cursor = banco.cursor()
+    #cursor.execute("UPDATE produtos SET nome ='{}', tipo = '{}', marca = '{}', medida '{}', valor = '{}' WHERE id = {}".format(nome,tipo,marca,medida,valor,numero_id))
+    cursor = banco.cursor()
+    atualiza= """ UPDATE produtos SET valor =""" + str(valor)+ """ WHERE id = """ + str(numero_id)
+    cursor.execute(atualiza)
+    banco.commit()
+    
+    #atualizar janela
+
+    JanelaEdit.close()
+    segunda_janela.close()
+    chamar_tela()
+
+    
+
+
+    
 def deletar():
    linha = segunda_janela.tableWidget.currentRow()
    
@@ -29,8 +89,7 @@ def deletar():
    dados_lidos = cursor.fetchall()
    valor_id=dados_lidos[linha][0]
    cursor.execute("DELETE FROM produtos WHERE id="+ str(valor_id))
-   print(linha + 1)
-   print(valor_id)
+  
 
 
 
@@ -144,11 +203,15 @@ def gera_csv():
 app=QtWidgets.QApplication([])
 formulario=uic.loadUi("formulario.ui")
 segunda_janela=uic.loadUi("Segunda_janela.ui")
+JanelaEdit=uic.loadUi("JanelaEdit.ui")
 formulario.pushButton.clicked.connect(funcao_principal)
 formulario.pushButton_3.clicked.connect(chamar_tela)
 segunda_janela.pushButton_5.clicked.connect(gera_pdf)
 segunda_janela.pushButton_4.clicked.connect(gera_csv)
 segunda_janela.pushButton_3.clicked.connect(deletar)
+segunda_janela.pushButton_2.clicked.connect(editar)
+JanelaEdit.pushButton.clicked.connect(salvarEdit)
+
 
 
 formulario.show()
